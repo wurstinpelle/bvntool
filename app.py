@@ -131,6 +131,21 @@ def verarbeiten():
 
     return render_template("index.html", uploaded=files, result_ready=True,
                            excel_file=excel_name, txt_file=txt_name)
+@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        files = request.files.getlist("files")
+        filenames = []
+        upload_path = app.config["UPLOAD_FOLDER"]
+        os.makedirs(upload_path, exist_ok=True)
+
+        for file in files:
+            filename = file.filename
+            file.save(os.path.join(upload_path, filename))
+            filenames.append(filename)
+
+        return render_template("index.html", uploaded=filenames)
+    return render_template("index.html", uploaded=[])
 
 @app.route("/results/<filename>")
 def download_file(filename):
